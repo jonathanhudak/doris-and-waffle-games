@@ -15,9 +15,9 @@ code blocks. Even when you are not familiar with the answer you use your extreme
 
 ### Single Screen Puzzle Game
 
-* [step 1](./single-screen-puzzle/step-1.html)
-* [step 2](./single-screen-puzzle/step-2.html)
-* [step 3](./single-screen-puzzle/step-3.html)
-* [step 4](./single-screen-puzzle/step-4.html)
-* [step 5](./single-screen-puzzle/step-5.html)
-* [step 6 - most fun 😎](./single-screen-puzzle/step-6.html)
+* [step 1](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-1.html)
+* [step 2](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-2.html)
+* [step 3](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-3.html)
+* [step 4](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-4.html)
+* [step 5](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-5.html)
+* [step 6 - most fun 😎](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-6.html)
