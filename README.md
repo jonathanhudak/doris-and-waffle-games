@@ -1,4 +1,4 @@
-# Doris and Waffle
+# Doris and Waffle 🚧⚠️🚧⚠️🚧⚠️🚧⚠️
 
 Making games with Chat GPT 4 like everyone else.
 
@@ -13,4 +13,11 @@ code blocks. Even when you are not familiar with the answer you use your extreme
 
 ## Games
 
-* [Single Screen Puzzle Game](./single-screen-puzzle/step-1.html)
+### Single Screen Puzzle Game
+
+* [step 1](./single-screen-puzzle/step-1.html)
+* [step 2](./single-screen-puzzle/step-2.html)
+* [step 3](./single-screen-puzzle/step-3.html)
+* [step 4](./single-screen-puzzle/step-4.html)
+* [step 5](./single-screen-puzzle/step-5.html)
+* [step 6 - most fun 😎](./single-screen-puzzle/step-6.html)
