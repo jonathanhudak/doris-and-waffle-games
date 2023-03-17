@@ -10,21 +10,31 @@
         background-color: #f0f0f0;
         image-rendering: pixelated;
       }
+
+      .unselectable {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
     </style>
     <title>Simple Game</title>
   </head>
   <body>
     <p>
-      Now with button controls for touch devices. Array keys also still work
+      Now with button controls for touch devices. Array keys also still work.
+      Don't look at the code it is garbage! 🗑️ but it works. Made with Chat GPT
       <a href="https://www.piskelapp.com">https://www.piskelapp.com</a>
     </p>
     <p><strong>Hint:</strong>&nbsp; Push to the side first.</p>
     <canvas id="gameCanvas" width="640" height="480"></canvas>
     <div class="controls">
-      <button id="moveLeft">◀</button>
-      <button id="moveUp">▲</button>
-      <button id="moveDown">▼</button>
-      <button id="moveRight">▶</button>
+      <button class="unselectable" id="moveLeft">◀</button>
+      <button class="unselectable" id="moveUp">▲</button>
+      <button class="unselectable" id="moveDown">▼</button>
+      <button class="unselectable" id="moveRight">▶</button>
     </div>
     <script>
       const canvas = document.getElementById("gameCanvas");
