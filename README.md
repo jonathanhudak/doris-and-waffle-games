@@ -24,8 +24,8 @@ code blocks. Even when you are not familiar with the answer you use your extreme
 * [step 5](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-5.html)
 * [step 6](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-6.html)
 * [step 7](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-7.html)
-* [step 8](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-8.html)
-* [step 9](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-9.html)
+* [step 8 - introduced sprite for Doris](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-8.html)
+* [step 9 - mobile support with buttons](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-9.html)
 
 #### Resources
 
