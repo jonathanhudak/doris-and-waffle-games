@@ -22,4 +22,11 @@ code blocks. Even when you are not familiar with the answer you use your extreme
 * [step 3](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-3.html)
 * [step 4](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-4.html)
 * [step 5](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-5.html)
-* [step 6 - most fun 😎](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-6.html)
+* [step 6](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-6.html)
+* [step 7](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-7.html)
+* [step 8](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-8.html)
+* [step 9](https://jonathanhudak.github.io/doris-and-waffle-games/single-screen-puzzle/step-9.html)
+
+#### Resources
+
+* Sprites: https://www.piskelapp.com

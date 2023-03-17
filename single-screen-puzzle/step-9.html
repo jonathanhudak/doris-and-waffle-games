@@ -15,7 +15,7 @@
   </head>
   <body>
     <p>
-      Doris the donut sprite! Sort of trembling. Made with
+      Now with button controls for touch devices. Array keys also still work
       <a href="https://www.piskelapp.com">https://www.piskelapp.com</a>
     </p>
     <p><strong>Hint:</strong>&nbsp; Push to the side first.</p>
@@ -42,6 +42,73 @@
         color: "blue",
         speed: 2,
       };
+
+      let moveX = 0;
+      let moveY = 0;
+
+      const moveLeftButton = document.getElementById("moveLeft");
+      const moveUpButton = document.getElementById("moveUp");
+      const moveDownButton = document.getElementById("moveDown");
+      const moveRightButton = document.getElementById("moveRight");
+
+      function moveCharacter(direction) {
+        switch (direction) {
+          case "left":
+            moveX = -5;
+            break;
+          case "up":
+            moveY = -5;
+            break;
+          case "down":
+            moveY = 5;
+            break;
+          case "right":
+            moveX = 5;
+            break;
+        }
+      }
+
+      function stopCharacterMovement() {
+        moveX = 0;
+        moveY = 0;
+      }
+
+      moveLeftButton.addEventListener("touchstart", () =>
+        moveCharacter("left")
+      );
+      moveLeftButton.addEventListener("touchend", () =>
+        stopCharacterMovement()
+      );
+      moveLeftButton.addEventListener("mousedown", () => moveCharacter("left"));
+      moveLeftButton.addEventListener("mouseup", () => stopCharacterMovement());
+
+      moveUpButton.addEventListener("touchstart", () => moveCharacter("up"));
+      moveUpButton.addEventListener("touchend", () => stopCharacterMovement());
+      moveUpButton.addEventListener("mousedown", () => moveCharacter("up"));
+      moveUpButton.addEventListener("mouseup", () => stopCharacterMovement());
+
+      moveDownButton.addEventListener("touchstart", () =>
+        moveCharacter("down")
+      );
+      moveDownButton.addEventListener("touchend", () =>
+        stopCharacterMovement()
+      );
+      moveDownButton.addEventListener("mousedown", () => moveCharacter("down"));
+      moveDownButton.addEventListener("mouseup", () => stopCharacterMovement());
+
+      moveRightButton.addEventListener("touchstart", () =>
+        moveCharacter("right")
+      );
+      moveRightButton.addEventListener("touchend", () =>
+        stopCharacterMovement()
+      );
+
+      moveRightButton.addEventListener("mousedown", () =>
+        moveCharacter("right")
+      );
+      moveRightButton.addEventListener("mouseup", () =>
+        stopCharacterMovement()
+      );
 
       const frameCount = 2; // Total number of animation frames in the sprite sheet
       const frameWidth = character.width; // Width of a single frame
@@ -167,6 +234,29 @@
         requestAnimationFrame(gameLoop);
       }
 
+      // Check if two rectangles are colliding
+
+      function isColliding(x, y, width, height, obstacles, excludeIndex) {
+        const rect1 = { x: x, y: y, width: width, height: height };
+
+        for (let i = 0; i < obstacles.length; i++) {
+          if (i === excludeIndex) continue;
+
+          const rect2 = obstacles[i];
+
+          if (
+            rect1.x < rect2.x + rect2.width &&
+            rect1.x + rect1.width > rect2.x &&
+            rect1.y < rect2.y + rect2.height &&
+            rect1.y + rect1.height > rect2.y
+          ) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
       // Update game objects
       function update() {
         // Character movement
@@ -184,6 +274,87 @@
         }
         if (keys.ArrowRight && character.x < canvas.width - character.width) {
           character.x += character.speed;
+        }
+
+        // Move character with buttons and check for collisions
+        const newX = character.x + moveX;
+        const newY = character.y + moveY;
+
+        const isCollidingWallsX = isColliding(
+          newX,
+          character.y,
+          character.width,
+          character.height,
+          walls
+        );
+        const isCollidingWallsY = isColliding(
+          character.x,
+          newY,
+          character.width,
+          character.height,
+          walls
+        );
+
+        let collidingBallIndexX = -1;
+        let collidingBallIndexY = -1;
+
+        for (let i = 0; i < spikyBalls.length; i++) {
+          if (
+            isColliding(newX, character.y, character.width, character.height, [
+              spikyBalls[i],
+            ])
+          ) {
+            collidingBallIndexX = i;
+          }
+          if (
+            isColliding(character.x, newY, character.width, character.height, [
+              spikyBalls[i],
+            ])
+          ) {
+            collidingBallIndexY = i;
+          }
+        }
+
+        if (!isCollidingWallsX && collidingBallIndexX === -1) {
+          character.x = newX;
+        } else if (collidingBallIndexX !== -1) {
+          const ball = spikyBalls[collidingBallIndexX];
+          const newBallX = ball.x + moveX;
+
+          if (
+            !isColliding(newBallX, ball.y, ball.width, ball.height, walls) &&
+            !isColliding(
+              newBallX,
+              ball.y,
+              ball.width,
+              ball.height,
+              spikyBalls,
+              collidingBallIndexX
+            )
+          ) {
+            ball.x = newBallX;
+          }
+        }
+
+        if (!isCollidingWallsY && collidingBallIndexY === -1) {
+          character.y = newY;
+        } else if (collidingBallIndexY !== -1) {
+          const ball = spikyBalls[collidingBallIndexY];
+          const newBallY = ball.y + moveY;
+
+          if (
+            !isColliding(ball.x, newBallY, ball.width, ball.height, walls) &&
+            !isColliding(
+              ball.x,
+              newBallY,
+              ball.width,
+              ball.height,
+              spikyBalls,
+              collidingBallIndexY
+            )
+          ) {
+            ball.y = newBallY;
+          }
         }
 
         // Collision detection
