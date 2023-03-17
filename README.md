@@ -1,5 +1,7 @@
 # Doris and Waffle 🚧⚠️🚧⚠️🚧⚠️🚧⚠️
 
+![](./doris.png)
+
 Making games with Chat GPT 4 like everyone else.
 
 ## Prompts

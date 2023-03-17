@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        display: block;
+        margin: auto;
+        background-color: #f0f0f0;
+        image-rendering: pixelated;
+      }
+    </style>
+    <title>Simple Game</title>
+  </head>
+  <body>
+    <p>Pushing obstacles to un-block the path!</p>
+    <p><strong>Hint:</strong>&nbsp; Push to the side first.</p>
+    <canvas id="gameCanvas" width="640" height="480"></canvas>
+    <script>
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // Game objects
+      const character = {
+        x: 50,
+        y: 50,
+        width: 16,
+        height: 16,
+        color: "blue",
+        speed: 2,
+      };
+
+      function drawCharacter() {
+        ctx.fillStyle = "yellow";
+
+        // Draw body (donut)
+        ctx.beginPath();
+        ctx.arc(
+          character.x + character.width / 2,
+          character.y + character.height / 2,
+          character.width / 2,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+        ctx.closePath();
+
+        // Draw inner hole of the donut
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(
+          character.x + character.width / 2,
+          character.y + character.height / 2,
+          character.width / 4,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+        ctx.closePath();
+
+        // Draw eyes
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(
+          character.x + character.width / 3,
+          character.y + character.height / 3,
+          character.width / 6,
+          0,
+          Math.PI * 2
+        );
+        ctx.arc(
+          character.x + (2 * character.width) / 3,
+          character.y + character.height / 3,
+          character.width / 6,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+        ctx.closePath();
+
+        // Draw pupils
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        ctx.arc(
+          character.x + character.width / 3,
+          character.y + character.height / 3,
+          character.width / 12,
+          0,
+          Math.PI * 2
+        );
+        ctx.arc(
+          character.x + (2 * character.width) / 3,
+          character.y + character.height / 3,
+          character.width / 12,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+        ctx.closePath();
+
+        // Draw eyebrows
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+
+        // Left eyebrow
+        ctx.beginPath();
+        ctx.moveTo(
+          character.x + character.width / 6,
+          character.y + character.height / 6
+        );
+        ctx.lineTo(character.x + character.width / 3, character.y / 3);
+        ctx.stroke();
+        ctx.closePath();
+
+        // Right eyebrow
+        ctx.beginPath();
+        ctx.moveTo(
+          character.x + character.width - character.width / 6,
+          character.y + character.height / 6
+        );
+        ctx.lineTo(character.x + (2 * character.width) / 3, character.y / 3);
+        ctx.stroke();
+        ctx.closePath();
+
+        // Draw arms and legs
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+
+        // Left arm
+        ctx.beginPath();
+        ctx.moveTo(
+          character.x + character.width / 4,
+          character.y + character.height / 2
+        );
+        ctx.lineTo(
+          character.x - character.width / 4,
+          character.y + character.height / 2
+        );
+        ctx.stroke();
+        ctx.closePath();
+
+        // Right arm
+        ctx.beginPath();
+        ctx.moveTo(
+          character.x + (3 * character.width) / 4,
+          character.y + character.height / 2
+        );
+        ctx.lineTo(
+          character.x + (5 * character.width) / 4,
+          character.y + character.height / 2
+        );
+        ctx.stroke();
+        ctx.closePath();
+
+        // Left leg
+        ctx.beginPath();
+        ctx.moveTo(
+          character.x + character.width / 2,
+          character.y + (3 * character.height) / 4
+        );
+        ctx.lineTo(
+          character.x + character.width / 4,
+          character.y + (5 * character.height) / 4
+        );
+        ctx.stroke();
+        ctx.closePath();
+
+        // Right leg
+        ctx.beginPath();
+        ctx.moveTo(
+          character.x + character.width / 2,
+          character.y + (3 * character.height) / 4
+        );
+        ctx.lineTo(
+          character.x + (3 * character.width) / 4,
+          character.y + (5 * character.height) / 4
+        );
+        ctx.stroke();
+        ctx.closePath();
+      }
+
+      const treasure = {
+        x: canvas.width - 50,
+        y: canvas.height - 50,
+        width: 16,
+        height: 16,
+        color: "gold",
+        found: false,
+      };
+
+      // Define walls
+      const wallColor = "#6e5b26";
+      const walls = [
+        { x: 100, y: 0, width: 16, height: 140, color: wallColor },
+        { x: 200, y: 0, width: 16, height: 290, color: wallColor },
+        { x: 300, y: 0, width: 16, height: 180, color: wallColor },
+        { x: 400, y: 100, width: 16, height: 140, color: wallColor },
+        {
+          x: 100,
+          y: 240,
+          width: 16,
+          height: canvas.height - 240,
+          color: wallColor,
+        },
+        {
+          x: 200,
+          y: 340,
+          width: 16,
+          height: canvas.height - 340,
+          color: wallColor,
+        },
+        {
+          x: 300,
+          y: 240,
+          width: 16,
+          height: canvas.height - 240,
+          color: wallColor,
+        },
+        {
+          x: 400,
+          y: 340,
+          width: 16,
+          height: canvas.height - 340,
+          color: wallColor,
+        },
+        { x: 0, y: 0, width: canvas.width, height: 10, color: wallColor },
+        {
+          x: 0,
+          y: canvas.height - 10,
+          width: canvas.width,
+          height: 10,
+          color: wallColor,
+        },
+        { x: 0, y: 0, width: 10, height: canvas.height, color: wallColor },
+        {
+          x: canvas.width - 10,
+          y: 0,
+          width: 10,
+          height: canvas.height,
+          color: wallColor,
+        },
+      ];
+
+      // Define spiky balls
+      const ballSize = 80;
+      const spikyBalls = [
+        { x: 115, y: 170, width: ballSize, height: ballSize, color: "purple" },
+        { x: 215, y: 240, width: ballSize, height: ballSize, color: "purple" },
+      ];
+
+      const obstacles = [...walls, ...spikyBalls];
+
+      // Keyboard controls
+      const keys = {
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false,
+      };
+
+      window.addEventListener("keydown", (e) => {
+        if (keys.hasOwnProperty(e.key)) {
+          keys[e.key] = true;
+        }
+      });
+
+      window.addEventListener("keyup", (e) => {
+        if (keys.hasOwnProperty(e.key)) {
+          keys[e.key] = false;
+        }
+      });
+
+      // Game loop
+      function gameLoop() {
+        update();
+        render();
+        requestAnimationFrame(gameLoop);
+      }
+
+      // Update game objects
+      function update() {
+        // Character movement
+        const oldX = character.x;
+        const oldY = character.y;
+
+        if (keys.ArrowUp && character.y > 0) {
+          character.y -= character.speed;
+        }
+        if (keys.ArrowDown && character.y < canvas.height - character.height) {
+          character.y += character.speed;
+        }
+        if (keys.ArrowLeft && character.x > 0) {
+          character.x -= character.speed;
+        }
+        if (keys.ArrowRight && character.x < canvas.width - character.width) {
+          character.x += character.speed;
+        }
+
+        // Collision detection
+        for (const obstacle of obstacles) {
+          if (collides(character, obstacle)) {
+            // If the obstacle is a spiky ball, push it
+            if (spikyBalls.includes(obstacle)) {
+              const oldBallX = obstacle.x;
+              const oldBallY = obstacle.y;
+
+              obstacle.x += character.x - oldX;
+              obstacle.y += character.y - oldY;
+
+              // Check for collisions with walls and prevent spiky balls from going through
+              for (const wall of walls) {
+                if (collides(obstacle, wall)) {
+                  obstacle.x = oldBallX;
+                  obstacle.y = oldBallY;
+                  character.x = oldX;
+                  character.y = oldY;
+                  break;
+                }
+              }
+            } else {
+              character.x = oldX;
+              character.y = oldY;
+            }
+            break;
+          }
+        }
+
+        // Check for collision with treasure
+        if (collides(character, treasure)) {
+          treasure.found = true;
+        }
+      }
+
+      // Render game objects
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawCharacter();
+
+        if (!treasure.found) {
+          drawRect(treasure);
+          for (const obstacle of obstacles) {
+            drawRect(obstacle);
+          }
+        } else {
+          displayText("Doris found the treasure!");
+        }
+      }
+
+      function drawRect(obj) {
+        ctx.fillStyle = obj.color;
+        ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+      }
+
+      function collides(a, b) {
+        return (
+          a.x < b.x + b.width &&
+          a.x + a.width > b.x &&
+          a.y < b.y + b.height &&
+          a.y + a.height > b.y
+        );
+      }
+
+      function displayText(text) {
+        ctx.font = "24px monospace";
+        ctx.fillStyle = "tomato";
+        ctx.textAlign = "center";
+        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+      }
+
+      gameLoop();
+    </script>
+  </body>
+</html>
