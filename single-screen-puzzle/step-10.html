@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        display: block;
+        margin: auto;
+        background-color: #f0f0f0;
+        image-rendering: pixelated;
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      main,
+      .controls,
+      .controls button {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .controls button {
+        font-size: 3rem;
+      }
+
+      .controls {
+        padding: 2rem 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      label {
+        display: inline-block;
+        cursor: pointer;
+        margin: 10px;
+        padding: 10px;
+        border: 2px solid transparent;
+      }
+
+      label:hover {
+        border: 2px solid #ccc;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+    <title>Simple Game</title>
+  </head>
+  <body>
+    <p>
+      Now with button controls for touch devices. Array keys also still work.
+      Don't look at the code it is garbage! 🗑️ but it works. Made with Chat GPT
+      <a href="https://www.piskelapp.com">https://www.piskelapp.com</a>
+    </p>
+    <p><strong>Hint:</strong>&nbsp; Push to the side first.</p>
+    <main>
+      <div class="game">
+        <section id="characterSelection">
+          <h2>Select your character:</h2>
+
+          <label>
+            <input type="radio" value="doris" name="character" />
+            <canvas class="character" width="64" height="64"></canvas>
+            Doris
+          </label>
+          <label>
+            <input type="radio" value="waffle" name="character" />
+            <canvas class="character" width="64" height="64"></canvas>
+            Waffle
+          </label>
+          <button id="startGame">Start Game</button>
+        </section>
+        <canvas id="gameCanvas" width="640" height="480"></canvas>
+        <div class="controls">
+          <button class="unselectable" id="moveLeft">◀</button>
+          <button class="unselectable" id="moveUp">▲</button>
+          <button class="unselectable" id="moveDown">▼</button>
+          <button class="unselectable" id="moveRight">▶</button>
+        </div>
+      </div>
+    </main>
+    <script>
+      const characterSprite = new Image();
+      const characterSelection = document.getElementById("characterSelection");
+      const characterSelect = document.getElementById("characterSelect");
+      const startGameButton = document.getElementById("startGame");
+
+      const canvas = document.getElementById("gameCanvas");
+      const size = Math.min(window.innerWidth, window.innerHeight);
+      canvas.width = size;
+      canvas.height = size;
+      window.addEventListener("resize", () => {
+        const newSize = Math.min(window.innerWidth, window.innerHeight);
+        canvas.width = newSize;
+        canvas.height = newSize;
+      });
+      const ctx = canvas.getContext("2d");
+
+      characterSprite.src = "doris-64-tremble.png";
+
+      // Game objects
+      const character = {
+        x: 10,
+        y: 10,
+        width: 64,
+        height: 64,
+        color: "blue",
+        speed: 2,
+      };
+
+      let moveX = 0;
+      let moveY = 0;
+
+      const moveLeftButton = document.getElementById("moveLeft");
+      const moveUpButton = document.getElementById("moveUp");
+      const moveDownButton = document.getElementById("moveDown");
+      const moveRightButton = document.getElementById("moveRight");
+
+      function moveCharacter(direction) {
+        switch (direction) {
+          case "left":
+            moveX = -5;
+            break;
+          case "up":
+            moveY = -5;
+            break;
+          case "down":
+            moveY = 5;
+            break;
+          case "right":
+            moveX = 5;
+            break;
+        }
+      }
+
+      function stopCharacterMovement() {
+        moveX = 0;
+        moveY = 0;
+      }
+
+      moveLeftButton.addEventListener("touchstart", () =>
+        moveCharacter("left")
+      );
+      moveLeftButton.addEventListener("touchend", () =>
+        stopCharacterMovement()
+      );
+      moveLeftButton.addEventListener("mousedown", () => moveCharacter("left"));
+      moveLeftButton.addEventListener("mouseup", () => stopCharacterMovement());
+
+      moveUpButton.addEventListener("touchstart", () => moveCharacter("up"));
+      moveUpButton.addEventListener("touchend", () => stopCharacterMovement());
+      moveUpButton.addEventListener("mousedown", () => moveCharacter("up"));
+      moveUpButton.addEventListener("mouseup", () => stopCharacterMovement());
+
+      moveDownButton.addEventListener("touchstart", () =>
+        moveCharacter("down")
+      );
+      moveDownButton.addEventListener("touchend", () =>
+        stopCharacterMovement()
+      );
+      moveDownButton.addEventListener("mousedown", () => moveCharacter("down"));
+      moveDownButton.addEventListener("mouseup", () => stopCharacterMovement());
+
+      moveRightButton.addEventListener("touchstart", () =>
+        moveCharacter("right")
+      );
+      moveRightButton.addEventListener("touchend", () =>
+        stopCharacterMovement()
+      );
+
+      moveRightButton.addEventListener("mousedown", () =>
+        moveCharacter("right")
+      );
+      moveRightButton.addEventListener("mouseup", () =>
+        stopCharacterMovement()
+      );
+
+      const frameCount = 2; // Total number of animation frames in the sprite sheet
+      const frameWidth = character.width; // Width of a single frame
+      const frameHeight = character.height; // Height of a single frame
+      const frameInterval = 8; // The number of iterations between frame updates
+      let frameIndex = 0; // Current frame index for sprite sheet
+      let iterationCount = 0; // Count of iterations since the last frame update
+
+      function drawCharacter() {
+        ctx.drawImage(
+          characterSprite,
+          0,
+          frameIndex * frameHeight,
+          frameWidth,
+          frameHeight,
+          character.x,
+          character.y,
+          frameWidth,
+          frameHeight
+        );
+      }
+
+      // Update frame index for the animation
+      function updateFrameIndex() {
+        frameIndex = (frameIndex + 1) % frameCount;
+      }
+
+      const treasure = {
+        x: canvas.width - 100,
+        y: canvas.height - 60,
+        width: 80,
+        height: 40,
+        color: "gold",
+        found: false,
+      };
+
+      // Define walls
+      const wallColor = "#6e5b26";
+      const walls = [
+        { x: 100, y: 0, width: 16, height: 120, color: wallColor },
+        { x: 200, y: 0, width: 16, height: 230, color: wallColor },
+        { x: 330, y: 0, width: 16, height: 140, color: wallColor },
+        { x: 400, y: 100, width: 16, height: 140, color: wallColor },
+        {
+          x: 100,
+          y: 240,
+          width: 16,
+          height: canvas.height - 240,
+          color: wallColor,
+        },
+        {
+          x: 200,
+          y: 340,
+          width: 16,
+          height: canvas.height - 340,
+          color: wallColor,
+        },
+        {
+          x: 300,
+          y: 240,
+          width: 16,
+          height: canvas.height - 240,
+          color: wallColor,
+        },
+        {
+          x: 400,
+          y: 340,
+          width: 16,
+          height: canvas.height - 340,
+          color: wallColor,
+        },
+        { x: 0, y: 0, width: canvas.width, height: 10, color: wallColor },
+        {
+          x: 0,
+          y: canvas.height - 10,
+          width: canvas.width,
+          height: 10,
+          color: wallColor,
+        },
+        { x: 0, y: 0, width: 10, height: canvas.height, color: wallColor },
+        {
+          x: canvas.width - 10,
+          y: 0,
+          width: 10,
+          height: canvas.height,
+          color: wallColor,
+        },
+      ];
+
+      // Define spiky balls
+      const ballSize = 80;
+      const spikyBalls = [
+        { x: 115, y: 190, width: ballSize, height: ballSize, color: "purple" },
+        { x: 215, y: 190, width: ballSize, height: ballSize, color: "purple" },
+      ];
+
+      const obstacles = [...walls, ...spikyBalls];
+
+      // Keyboard controls
+      const keys = {
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false,
+      };
+
+      window.addEventListener("keydown", (e) => {
+        if (keys.hasOwnProperty(e.key)) {
+          keys[e.key] = true;
+        }
+      });
+
+      window.addEventListener("keyup", (e) => {
+        if (keys.hasOwnProperty(e.key)) {
+          keys[e.key] = false;
+        }
+      });
+
+      // Game loop
+      function gameLoop() {
+        update();
+        render();
+        requestAnimationFrame(gameLoop);
+      }
+
+      // Check if two rectangles are colliding
+
+      function isColliding(x, y, width, height, obstacles, excludeIndex) {
+        const rect1 = { x: x, y: y, width: width, height: height };
+
+        for (let i = 0; i < obstacles.length; i++) {
+          if (i === excludeIndex) continue;
+
+          const rect2 = obstacles[i];
+
+          if (
+            rect1.x < rect2.x + rect2.width &&
+            rect1.x + rect1.width > rect2.x &&
+            rect1.y < rect2.y + rect2.height &&
+            rect1.y + rect1.height > rect2.y
+          ) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      // Update game objects
+      function update() {
+        // Character movement
+        const oldX = character.x;
+        const oldY = character.y;
+
+        if (keys.ArrowUp && character.y > 0) {
+          character.y -= character.speed;
+        }
+        if (keys.ArrowDown && character.y < canvas.height - character.height) {
+          character.y += character.speed;
+        }
+        if (keys.ArrowLeft && character.x > 0) {
+          character.x -= character.speed;
+        }
+        if (keys.ArrowRight && character.x < canvas.width - character.width) {
+          character.x += character.speed;
+        }
+
+        // Move character with buttons and check for collisions
+        const newX = character.x + moveX;
+        const newY = character.y + moveY;
+
+        const isCollidingWallsX = isColliding(
+          newX,
+          character.y,
+          character.width,
+          character.height,
+          walls
+        );
+        const isCollidingWallsY = isColliding(
+          character.x,
+          newY,
+          character.width,
+          character.height,
+          walls
+        );
+
+        let collidingBallIndexX = -1;
+        let collidingBallIndexY = -1;
+
+        for (let i = 0; i < spikyBalls.length; i++) {
+          if (
+            isColliding(newX, character.y, character.width, character.height, [
+              spikyBalls[i],
+            ])
+          ) {
+            collidingBallIndexX = i;
+          }
+          if (
+            isColliding(character.x, newY, character.width, character.height, [
+              spikyBalls[i],
+            ])
+          ) {
+            collidingBallIndexY = i;
+          }
+        }
+
+        if (!isCollidingWallsX && collidingBallIndexX === -1) {
+          character.x = newX;
+        } else if (collidingBallIndexX !== -1) {
+          const ball = spikyBalls[collidingBallIndexX];
+          const newBallX = ball.x + moveX;
+
+          if (
+            !isColliding(newBallX, ball.y, ball.width, ball.height, walls) &&
+            !isColliding(
+              newBallX,
+              ball.y,
+              ball.width,
+              ball.height,
+              spikyBalls,
+              collidingBallIndexX
+            )
+          ) {
+            ball.x = newBallX;
+          }
+        }
+
+        if (!isCollidingWallsY && collidingBallIndexY === -1) {
+          character.y = newY;
+        } else if (collidingBallIndexY !== -1) {
+          const ball = spikyBalls[collidingBallIndexY];
+          const newBallY = ball.y + moveY;
+
+          if (
+            !isColliding(ball.x, newBallY, ball.width, ball.height, walls) &&
+            !isColliding(
+              ball.x,
+              newBallY,
+              ball.width,
+              ball.height,
+              spikyBalls,
+              collidingBallIndexY
+            )
+          ) {
+            ball.y = newBallY;
+          }
+        }
+
+        // Collision detection
+        for (const obstacle of obstacles) {
+          if (collides(character, obstacle)) {
+            // If the obstacle is a spiky ball, push it
+            if (spikyBalls.includes(obstacle)) {
+              const oldBallX = obstacle.x;
+              const oldBallY = obstacle.y;
+
+              obstacle.x += character.x - oldX;
+              obstacle.y += character.y - oldY;
+
+              // Check for collisions with walls and prevent spiky balls from going through
+              for (const wall of walls) {
+                if (collides(obstacle, wall)) {
+                  obstacle.x = oldBallX;
+                  obstacle.y = oldBallY;
+                  character.x = oldX;
+                  character.y = oldY;
+                  break;
+                }
+              }
+            } else {
+              character.x = oldX;
+              character.y = oldY;
+            }
+            break;
+          }
+        }
+
+        // Check for collision with treasure
+        if (collides(character, treasure)) {
+          treasure.found = true;
+        }
+      }
+
+      // Render game objects
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawCharacter();
+
+        // Update the frame index for the animation
+        if (iterationCount % frameInterval === 0) {
+          updateFrameIndex();
+        }
+
+        // Increment iteration count
+        iterationCount++;
+
+        if (!treasure.found) {
+          drawRect(treasure);
+          for (const obstacle of obstacles) {
+            drawRect(obstacle);
+          }
+        } else {
+          displayText("Doris found the treasure!");
+        }
+      }
+
+      function drawRect(obj) {
+        ctx.fillStyle = obj.color;
+        ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+      }
+
+      function collides(a, b) {
+        return (
+          a.x < b.x + b.width &&
+          a.x + a.width > b.x &&
+          a.y < b.y + b.height &&
+          a.y + a.height > b.y
+        );
+      }
+
+      function displayText(text) {
+        ctx.font = "24px monospace";
+        ctx.fillStyle = "tomato";
+        ctx.textAlign = "center";
+        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+      }
+
+      function loadImages(sources, callback) {
+        const images = {};
+        let loadedImages = 0;
+        const numImages = Object.keys(sources).length;
+
+        for (const src in sources) {
+          images[src] = new Image();
+          images[src].onload = function () {
+            loadedImages++;
+            if (loadedImages >= numImages) {
+              callback(images);
+            }
+          };
+          images[src].src = sources[src];
+        }
+      }
+
+      function animateCharacter(canvas, characterImg) {
+        const context = canvas.getContext("2d");
+        let y = 0;
+        let direction = 1;
+
+        function draw() {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(characterImg, 0, y);
+          y += direction;
+          if (y > canvas.height || y < 0) {
+            direction = -direction;
+          }
+          requestAnimationFrame(draw);
+        }
+
+        draw();
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const characterCanvases = document.querySelectorAll(".character");
+        const characterInputs = document.querySelectorAll(
+          'input[name="character"]'
+        );
+
+        loadImages(
+          {
+            doris: "doris-64-tremble.png",
+            waffle: "waffle.png",
+          },
+          (images) => {
+            characterInputs.forEach((input, i) => {
+              input.addEventListener("change", () => {
+                if (input.checked) {
+                  animateCharacter(characterCanvases[i], images[input.value]);
+                }
+              });
+            });
+          }
+        );
+
+        const startGameButton = document.getElementById("startGame");
+        startGameButton.addEventListener("click", () => {
+          const selectedCharacter = document.querySelector(
+            'input[name="character"]:checked'
+          );
+          if (selectedCharacter) {
+            console.log(`Starting game with ${selectedCharacter.value}`);
+          } else {
+            alert("Please select a character before starting the game");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
